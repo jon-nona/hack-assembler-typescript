@@ -1,0 +1,2 @@
+export const example = () => true;
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi4uL3NyYy9pbmRleC50cyJdLCJuYW1lcyI6WyJleGFtcGxlIl0sIm1hcHBpbmdzIjoiQUFBQSxPQUFPLE1BQU1BLE9BQU8sR0FBRyxNQUFlLElBQS9CIiwic291cmNlc0NvbnRlbnQiOlsiZXhwb3J0IGNvbnN0IGV4YW1wbGUgPSAoKTogYm9vbGVhbiA9PiB0cnVlXG4iXX0=
