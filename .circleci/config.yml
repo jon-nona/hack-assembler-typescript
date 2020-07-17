@@ -32,4 +32,4 @@ jobs:
 workflows:
   test-build-deploy:
     jobs:
-      - test-and-build
+      - test-build-deploy
