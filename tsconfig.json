@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "allowSyntheticDefaultImports": true,
+    "declaration": true /* Generates corresponding '.d.ts' file. */,
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "lib": ["es6"],
+    "moduleResolution": "node",
+    "module": "esnext",
+    "outDir": "lib",
+    "strict": true,
+    "target": "ES2019"
+  },
+  "exclude": [
+    "node_modules",
+    "babel.config.js",
+    "jest.config.js",
+    "lib",
+    "**/*.test.ts"
+  ],
+  "rootDirs": ["./src"]
+}

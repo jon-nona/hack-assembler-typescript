@@ -1,0 +1,35 @@
+orbs:
+  node: circleci/node@3.0.1
+version: 2.1
+
+jobs:
+  test-build-deploy:
+    executor:
+      name: node/default
+      tag: '12.18.2'
+    steps:
+      - checkout
+      - node/install-packages
+      - run:
+          name: Lint
+          command: npm run lint
+      - run:
+          name: Test
+          command: npm run _test:ci
+      - run:
+          name: Build
+          command: npm run build
+      - when:
+          condition:
+            or:
+              - equal: [develop, << pipeline.git.branch >>]
+              - equal: [master, << pipeline.git.branch >>]
+          steps:
+            - deploy:
+                name: Publish package
+                command: PACKAGE_TAG=v0.0.${CIRCLE_BUILD_NUM} npm run publish
+
+workflows:
+  test-build-deploy:
+    jobs:
+      - test-and-build

@@ -1,0 +1,16 @@
+{
+  "audit:critical": "Audit npm packages for critical vulnerabilities",
+  "build": "build the library",
+  "build:copyfiles": "copy all necessary files to the build folder",
+  "build:clean": "remove the build folder",
+  "build:types": "build type definitions for the project and emit to /lib",
+  "build:js": "build the project with typescript",
+  "publish": "build project and publish tag to git",
+  "lint": "lint the project",
+  "lint:fix": "fix lint errors",
+  "test:watch": "run all unit tests, in watch mode",
+  "test": "run all unit tests",
+  "test:coverage": "run all unit tests, generate coverage reports in html and json and open them in the default browser",
+  "type:check": "check type definitions are correct",
+  "type:check:watch": "check type definitions in watch mode"
+}
