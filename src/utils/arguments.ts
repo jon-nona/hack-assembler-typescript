@@ -16,7 +16,7 @@ const createOutputObject = R.zipObj(['inputFile', 'outPutFile'])
 
 export const secondArgumentNotSupplied: (
   inputArguments: string[],
-) => boolean = R.pipe(R.length, R.lt(R.__, 2))
+) => boolean = R.pipe(R.length, R.gt(2))
 
 export const parseInputArguments: (
   inputArguments: string[],
