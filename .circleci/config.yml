@@ -26,8 +26,8 @@ jobs:
               - equal: [master, << pipeline.git.branch >>]
           steps:
             - run:
-              name: Git setup
-              command: git config --global user.email "jon@nonacreative.com" && git config --global user.name "jon-nona"
+                name: Git setup
+                command: git config --global user.email "jon@nonacreative.com" && git config --global user.name "jon-nona"
             - deploy:
                 name: Publish package
                 command: PACKAGE_TAG=v0.0.${CIRCLE_BUILD_NUM} npm run publish
