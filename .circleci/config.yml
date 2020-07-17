@@ -25,6 +25,9 @@ jobs:
               - equal: [develop, << pipeline.git.branch >>]
               - equal: [master, << pipeline.git.branch >>]
           steps:
+            - add_ssh_keys:
+                fingerprints:
+                  - '88:9b:81:a0:b9:7c:16:77:97:88:ce:e0:9d:2a:de:f8'
             - run:
                 name: Git setup
                 command: git config --global user.email "jon@nonacreative.com" && git config --global user.name "jon-nona"
