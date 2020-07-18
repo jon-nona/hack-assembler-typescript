@@ -6,11 +6,13 @@
     "esModuleInterop": true,
     "lib": ["es6"],
     "moduleResolution": "node",
-    "module": "esnext",
+    "module": "commonjs",
     "outDir": "lib",
     "strict": true,
-    "target": "ES2019"
+    "target": "ESNEXT",
+    "isolatedModules": true
   },
+  "include": ["src", "typings"],
   "exclude": [
     "node_modules",
     "babel.config.js",
@@ -18,5 +20,6 @@
     "lib",
     "**/*.test.ts"
   ],
-  "rootDirs": ["./src"]
+  "rootDirs": ["./src"],
+  "typeRoots": ["node_modules/@types", "src/typings"]
 }

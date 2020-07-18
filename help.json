@@ -1,4 +1,5 @@
 {
+  "assemble": "Assemble a file and write it out to a hack file: exampe usage: npm run assemble -- -i path/to/input.asm -o (optional) path/to/output.hack",
   "audit:critical": "Audit npm packages for critical vulnerabilities",
   "build": "build the library",
   "build:copyfiles": "copy all necessary files to the build folder",
