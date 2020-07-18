@@ -9,7 +9,8 @@
     "module": "commonjs",
     "outDir": "lib",
     "strict": true,
-    "target": "ES2019"
+    "target": "ESNEXT",
+    "isolatedModules": true
   },
   "include": ["src", "typings"],
   "exclude": [
