@@ -10,7 +10,7 @@ describe('arguments', () => {
       // then ... it should return the result as expected
       expect(result).toEqual({
         inputFile: 'test',
-        outPutFile: 'test2',
+        outputFile: 'test2',
       })
     })
 
@@ -25,7 +25,7 @@ describe('arguments', () => {
       expect(result).toEqual({
         inputFile:
           '/Users/jonathanarnold/Desktop/Learning Day/hack-assembler-typescript/test.asm',
-        outPutFile:
+        outputFile:
           '/Users/jonathanarnold/Desktop/Learning Day/hack-assembler-typescript/test.hack',
       })
     })
@@ -38,7 +38,7 @@ describe('arguments', () => {
       // then ... it should return the result as expected
       expect(result).toEqual({
         inputFile: 'test.asm',
-        outPutFile: 'test.hack',
+        outputFile: 'test.hack',
       })
     })
   })

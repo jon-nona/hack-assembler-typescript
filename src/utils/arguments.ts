@@ -1,5 +1,6 @@
-import R from 'ramda'
 import path from 'path'
+import R from 'ramda'
+import { FileArguments } from './types'
 
 const createHackOutputFileNameFromInput = (file: string): string =>
   path.join(
@@ -12,7 +13,7 @@ const createInputAndOutputArgumentsFromFirstArgument = R.chain(
   R.pipe(R.head, createHackOutputFileNameFromInput),
 )
 
-const createOutputObject = R.zipObj(['inputFile', 'outPutFile'])
+const createOutputObject = R.zipObj(['inputFile', 'outputFile'])
 
 export const secondArgumentNotSupplied: (
   inputArguments: string[],
@@ -20,10 +21,7 @@ export const secondArgumentNotSupplied: (
 
 export const parseInputArguments: (
   inputArguments: string[],
-) => {
-  inputFile: string
-  outputFile: string
-} = R.pipe(
+) => FileArguments = R.pipe(
   R.take(2),
   R.ifElse(
     secondArgumentNotSupplied,

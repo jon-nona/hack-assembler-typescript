@@ -4,7 +4,7 @@
   "description": "An assembler for the hack language written in typescript",
   "main": "index.js",
   "scripts": {
-    "assemble": "ts-node src/index.ts",
+    "assemble": "ts-node --files src/index.ts",
     "audit:critical": "audit-ci --critical",
     "build": "npm run _build:spec",
     "build:copyfiles": "npm run _build:copyfiles:spec",
@@ -46,6 +46,7 @@
     "@babel/runtime": "^7.10.5",
     "@commitlint/config-conventional": "^8.3.4",
     "@types/jest": "^25.2.3",
+    "@types/yargs": "^15.0.5",
     "@typescript-eslint/eslint-plugin": "^2.31.0",
     "@typescript-eslint/parser": "^2.31.0",
     "audit-ci": "^3.0.0",
@@ -64,6 +65,7 @@
     "prettier": "^2.0.5",
     "publish-to-git": "^1.1.9",
     "rimraf": "^3.0.2",
+    "rxjs-marbles": "^6.0.1",
     "ts-jest": "^26.1.3",
     "ts-node": "^8.10.2",
     "typescript": "^3.9.7"
@@ -76,6 +78,9 @@
     }
   },
   "dependencies": {
-    "ramda": "^0.27.0"
+    "chalk": "^4.1.0",
+    "ramda": "^0.27.0",
+    "rxjs": "^6.6.0",
+    "yargs": "^15.4.1"
   }
 }
