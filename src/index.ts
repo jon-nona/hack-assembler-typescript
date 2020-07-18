@@ -1,11 +1,10 @@
-import * as fs from 'fs'
 import chalk from 'chalk'
+import * as fs from 'fs'
 import { bindNodeCallback, Observable, of } from 'rxjs'
 import { flatMap, map, tap } from 'rxjs/operators'
 import yargs from 'yargs'
 import { parseInputArguments } from './utils/arguments'
 import { cleanCommentsAndRemoveBlankLines } from './utils/line-parser'
-import R from 'ramda'
 
 export const readFile$ = bindNodeCallback(fs.readFile)
 export const writeFile$ = bindNodeCallback(fs.writeFile)
