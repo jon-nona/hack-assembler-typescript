@@ -19,7 +19,7 @@ describe('line parser', () => {
       // when ... we call our method
       const result = SUT.removeWhiteSpace(testArray)
       // then ... the result should be returned as expected
-      expect(result).toEqual(['something', 'some other stuff'])
+      expect(result).toEqual(['something', 'someotherstuff'])
     })
   })
 
@@ -46,13 +46,13 @@ describe('line parser', () => {
   })
 
   describe('cleanCommentsAndRemoveBlankLines', () => {
-    it('should remove all comments and blank lines from a strign', () => {
+    it('should remove all comments and blank lines from a string', () => {
       // given ... we have a string with some new lines and comments and blank lines
       const testString = 'a string with\nnew lines\n\n// some comment'
       // when ... we call our method
       const result = SUT.cleanCommentsAndRemoveBlankLines(testString)
       // then ... the result should be returned as expected
-      expect(result).toEqual('a string with\nnew lines')
+      expect(result).toEqual('astringwith\nnewlines')
     })
   })
 })
