@@ -37,4 +37,15 @@ describe('instruction parser', () => {
       },
     )
   })
+
+  describe('convertAInstructionToBinary', () => {
+    it('should convert an a instruction to the correct binary code', () => {
+      // given ... we have an a instruction
+      const aInststruction = '@21'
+      // when ... we call our method
+      const result = SUT.convertAInstructionToBinary(aInststruction)
+      // then ... it should return the result as expected
+      expect(result).toEqual('0000000000010101')
+    })
+  })
 })
