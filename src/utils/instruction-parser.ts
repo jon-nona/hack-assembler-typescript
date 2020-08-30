@@ -1,5 +1,8 @@
 import R from 'ramda'
 import * as stringUtils from './string'
+import { CInstructionValue } from './types'
+
+const cInstructionRegex = /^(?<dest>M|D|MD|A|AM|AD|AMD)=(?<comp>0|1|-1|![ADM]|D[+-][AM]|[AM]-D|D[&|]A|A[&|]D|D[&|]M|M[&|]D|[ADM][+-]?1?);?(?<jump>JGT|JEQ|JGE|JLT|JNEJLE|JMP)?$/
 
 const isSymbolOrAInstruction = R.pipe(R.head, R.equals('@'))
 const isAllDigits = R.pipe(R.match(/\d+/), R.length, R.gt(R.__, 0))
@@ -25,3 +28,10 @@ export const isSymbol = R.allPass([
   isSymbolOrAInstruction,
   R.pipe(R.drop(1), isAllLetters),
 ])
+
+export const parseCInstruction: (value: string) => CInstructionValue = R.pipe(
+  R.match(cInstructionRegex),
+  R.slice(1, 4),
+  R.zipObj(['dest', 'comp', 'jump']),
+  R.reject(R.isNil),
+)
