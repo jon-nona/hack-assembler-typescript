@@ -4,7 +4,7 @@ export interface FileArguments {
 }
 
 export interface CInstructionValue {
-  dest: string
-  comp: string
-  jump: string | null
+  dest?: string
+  comp?: string
+  jump?: string
 }

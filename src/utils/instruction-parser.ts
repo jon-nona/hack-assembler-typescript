@@ -1,5 +1,5 @@
 import R from 'ramda'
-import * as stringUtils from './string'
+import { leftPad } from './string'
 import { CInstructionValue } from './types'
 
 const cInstructionRegex = /^(?<dest>M|D|MD|A|AM|AD|AMD)=(?<comp>0|1|-1|![ADM]|D[+-][AM]|[AM]-D|D[&|]A|A[&|]D|D[&|]M|M[&|]D|[ADM][+-]?1?);?(?<jump>JGT|JEQ|JGE|JLT|JNEJLE|JMP)?$/
@@ -13,21 +13,16 @@ export const isAInstruction = R.allPass([
   R.pipe(R.drop(1), isAllDigits),
 ])
 
-const decimalToBinary = (x: number): string => x.toString(2)
-
-export const convertAInstructionToBinary: (
-  aInstruction: string,
-) => string = R.pipe(
-  R.drop(1),
-  parseInt,
-  decimalToBinary,
-  stringUtils.leftPad(16),
-)
-
-export const isSymbol = R.allPass([
+export const isSymbol: boolean = R.allPass([
   isSymbolOrAInstruction,
   R.pipe(R.drop(1), isAllLetters),
 ])
+
+const decimalToBinaryString = (x: number): string => x.toString(2)
+
+export const convertAInstructionToBinary: (
+  aInstruction: string,
+) => string = R.pipe(R.drop(1), parseInt, decimalToBinaryString, leftPad(16))
 
 export const parseCInstruction: (value: string) => CInstructionValue = R.pipe(
   R.match(cInstructionRegex),
