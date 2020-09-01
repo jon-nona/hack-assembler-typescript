@@ -68,7 +68,7 @@
     "publish-to-git": "^1.1.9",
     "rimraf": "^3.0.2",
     "rxjs-marbles": "^6.0.1",
-    "ts-jest": "^26.1.4",
+    "ts-jest": "^26.3.0",
     "typescript": "^3.9.7"
   },
   "husky": {
