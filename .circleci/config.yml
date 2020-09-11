@@ -9,7 +9,8 @@ jobs:
       tag: '12.18.2'
     steps:
       - checkout
-      - node/install-packages
+      - node/install-packages:
+          cache-version: v2
       - run:
           name: Lint
           command: npm run lint
