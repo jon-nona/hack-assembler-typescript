@@ -17,7 +17,7 @@ describe('tables', () => {
         it(description, () => {
           // given ... we have a value
           // when ... we look it up in our table.
-          const result = SUT.destTable[value as any]
+          const result = SUT.destTable[value as keyof typeof SUT.destTable]
           // then ... we should get the result as expected
           expect(result).toEqual(expected)
         })
@@ -40,7 +40,7 @@ describe('tables', () => {
         it(description, () => {
           // given ... we have a value
           // when ... we look it up in our table.
-          const result = SUT.jumpTable[value as any]
+          const result = SUT.jumpTable[value as keyof typeof SUT.jumpTable]
           // then ... we should get the result as expected
           expect(result).toEqual(expected)
         })
@@ -79,7 +79,10 @@ describe('tables', () => {
         it(description, () => {
           // given ... we have a value
           // when ... we look it up in our table.
-          const result = SUT.predefinedSymbolsTable[value as any]
+          const result =
+            SUT.predefinedSymbolsTable[
+              value as keyof typeof SUT.predefinedSymbolsTable
+            ]
           // then ... we should get the result as expected
           expect(result).toEqual(expected)
         })
@@ -127,7 +130,7 @@ describe('tables', () => {
         it(description, () => {
           // given ... we have a value
           // when ... we look it up in our table.
-          const result = SUT.compTable[value as any]
+          const result = SUT.compTable[value as keyof typeof SUT.compTable]
           // then ... we should get the result as expected
           expect(result).toEqual(expected)
         })
