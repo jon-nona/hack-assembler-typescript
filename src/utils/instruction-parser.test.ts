@@ -1,5 +1,6 @@
 import * as SUT from './instruction-parser'
 import parametrize from 'js-parametrize'
+import { CInstructionValue } from './types'
 
 describe('instruction parser', () => {
   describe('isAintruction', () => {
@@ -47,5 +48,71 @@ describe('instruction parser', () => {
       // then ... it should return the result as expected
       expect(result).toEqual('0000000000010101')
     })
+  })
+
+  describe('parseCInstruction', () => {
+    parametrize(
+      [
+        [
+          'M=1;JGT',
+          {
+            dest: 'M',
+            comp: '1',
+            jump: 'JGT',
+          },
+        ],
+        [
+          'M=1',
+          {
+            dest: 'M',
+            comp: '1',
+          },
+        ],
+        [
+          'M=D',
+          {
+            dest: 'M',
+            comp: 'D',
+          },
+        ],
+        [
+          'M=M+D',
+          {
+            dest: 'M',
+            comp: 'M+D',
+          },
+        ],
+        [
+          'D=M-1',
+          {
+            dest: 'D',
+            comp: 'M-1',
+          },
+        ],
+        [
+          'D;JEQ',
+          {
+            comp: 'D',
+            jump: 'JEQ',
+          },
+        ],
+        [
+          '0;JMP',
+          {
+            comp: '0',
+            jump: 'JMP',
+          },
+        ],
+      ],
+      (instruction: string, expected: CInstructionValue) => {
+        it('should parse a c instruction', () => {
+          // given ... we have a c instruction
+          // when ... we call our function
+          const result = SUT.parseCInstruction(instruction)
+          // then ... it should return the result as expected
+          expect(result).toEqual(expected)
+        })
+      },
+    )
   })
 })

@@ -2,7 +2,7 @@ import R from 'ramda'
 import { leftPad } from './string'
 import { CInstructionValue } from './types'
 
-const cInstructionRegex = /^(?<dest>M|D|MD|A|AM|AD|AMD)=(?<comp>0|1|-1|![ADM]|D[+-][AM]|[AM]-D|D[&|]A|A[&|]D|D[&|]M|M[&|]D|[ADM][+-]?1?);?(?<jump>JGT|JEQ|JGE|JLT|JNEJLE|JMP)?$/
+const cInstructionRegex = /(?:(?<dest>M|D|MD|A|AM|AD|AMD)=)?(?<comp>0|1|-1|![ADM]|[AMD][+-][AMD]|[AMD]-[AMD]|D[&|]A|A[&|]D|D[&|]M|M[&|]D|[ADM][+-]?1?);?(?<jump>JGT|JEQ|JGE|JLT|JNEJLE|JMP)?$/
 
 const isSymbolOrAInstruction = R.pipe(R.head, R.equals('@'))
 const isAllDigits = R.pipe(R.match(/\d+/), R.length, R.gt(R.__, 0))
