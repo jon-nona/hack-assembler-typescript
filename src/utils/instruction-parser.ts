@@ -1,6 +1,7 @@
 import R from 'ramda'
 import { leftPad } from './string'
 import { CInstructionValue } from './types'
+import { lookupTable, compTable, destTable, jumpTable } from './tables'
 
 const cInstructionRegex = /(?:(?<dest>M|D|MD|A|AM|AD|AMD)=)?(?<comp>0|1|-1|![ADM]|[AMD][+-][AMD]|[AMD]-[AMD]|D[&|]A|A[&|]D|D[&|]M|M[&|]D|[ADM][+-]?1?);?(?<jump>JGT|JEQ|JGE|JLT|JNEJLE|JMP)?$/
 
@@ -29,4 +30,19 @@ export const parseCInstruction: (value: string) => CInstructionValue = R.pipe(
   R.slice(1, 4),
   R.zipObj(['dest', 'comp', 'jump']),
   R.reject(R.isNil),
+)
+
+const lookupFunctions = [
+  R.prop(R.__, compTable),
+  R.propOr('000', R.__, destTable),
+  R.propOr('000', R.__, jumpTable),
+]
+
+export const convertCInstructionToBinary: (
+  value: CInstructionValue,
+) => string = R.pipe(
+  R.props(['comp', 'dest', 'jump']),
+  R.zipWith(R.call, lookupFunctions),
+  R.join(''),
+  R.concat('111'),
 )

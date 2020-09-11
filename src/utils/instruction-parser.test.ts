@@ -115,4 +115,48 @@ describe('instruction parser', () => {
       },
     )
   })
+
+  describe('convertCInstructionToBinarWithoutABit', () => {
+    parametrize(
+      [
+        [
+          {
+            dest: 'MD',
+            comp: 'D+1',
+          },
+          '1110011111011000',
+        ],
+        [
+          {
+            dest: 'D',
+            comp: 'M',
+          },
+          '1111110000010000',
+        ],
+        [
+          {
+            dest: 'M',
+            comp: 'M+D',
+          },
+          '1111000010001000',
+        ],
+        [
+          {
+            comp: 'D',
+            jump: 'JGT',
+          },
+          '1110001100000001',
+        ],
+      ],
+      (cInstructionValue: CInstructionValue, expected: string) => {
+        it('should convert the CInstruction to binary', () => {
+          // given ... we have a CInstructionValue object
+          // when ... we call our function
+          const result = SUT.convertCInstructionToBinary(cInstructionValue)
+          // then ... it should return the value as expected
+          expect(result).toEqual(expected)
+        })
+      },
+    )
+  })
 })
