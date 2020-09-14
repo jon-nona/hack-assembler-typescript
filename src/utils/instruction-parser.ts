@@ -1,8 +1,16 @@
 import R from 'ramda'
 import { leftPad } from './string'
+import { compTable, destTable, jumpTable } from './tables'
 import { CInstructionValue } from './types'
-import { lookupTable, compTable, destTable, jumpTable } from './tables'
 
+/*
+Regex for parsing a c-instruction and capturing the various instructions out of it. Assumes the instruction has already been
+trimmed of spaces.
+- Optional non capturing group surrounding a capturing group of dest should it exist.
+- dest - named dest capturing group. captures the dest command
+- comp - named comp capturing group. matches on all the possible values of comp and captures them
+- jump - named jump capturing group. matches on all the possible values of jump and captures them
+*/
 const cInstructionRegex = /(?:(?<dest>M|D|MD|A|AM|AD|AMD)=)?(?<comp>0|1|-1|![ADM]|[AMD][+-][AMD]|[AMD]-[AMD]|D[&|]A|A[&|]D|D[&|]M|M[&|]D|[ADM][+-]?1?);?(?<jump>JGT|JEQ|JGE|JLT|JNEJLE|JMP)?$/
 
 const isSymbolOrAInstruction = R.pipe(R.head, R.equals('@'))
