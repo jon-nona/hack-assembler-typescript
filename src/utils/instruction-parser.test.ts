@@ -59,8 +59,8 @@ describe('instruction parser', () => {
           true,
         ],
         [
-          '(LOOP)',
-          'it should return true if the instruction is label symbol',
+          'LOOP',
+          'it should return true if the instruction is a label symbol',
           true,
         ],
       ],
@@ -184,7 +184,7 @@ describe('instruction parser', () => {
     )
   })
 
-  describe('convertCInstructionToBinarWithoutABit', () => {
+  describe('convertCInstructionToBinary', () => {
     parametrize(
       [
         [

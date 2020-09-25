@@ -33,12 +33,16 @@ export const isVariableSymbol: (value: string) => boolean = R.allPass([
 ])
 
 const labelRegex = /^\([A-Z]+\)$/g
+const labeNoBracketsRegex = /^[A-Z]+$/g
 export const isLabelSymbol: (value: string) => boolean = R.test(labelRegex)
+export const isLabelWithNoBrackets: (value: string) => boolean = R.test(
+  labeNoBracketsRegex,
+)
 
 export const isSymbolOrAInstruction = R.anyPass([
   isAInstruction,
   isVariableSymbol,
-  isLabelSymbol,
+  isLabelWithNoBrackets,
 ])
 
 export const decimalToBinaryString = (x: number): string => x.toString(2)

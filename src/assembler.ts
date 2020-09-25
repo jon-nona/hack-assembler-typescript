@@ -16,6 +16,7 @@ import {
   decimalToBinaryString,
 } from './utils/instruction-parser'
 import { SymbolTable } from './utils/types'
+import { leftPad } from './utils/string'
 
 export const assembleCInstruction: (value: string) => string = R.pipe(
   parseCInstruction,
@@ -24,7 +25,11 @@ export const assembleCInstruction: (value: string) => string = R.pipe(
 
 export const assembleSymbol = R.curry(
   (symbolTable: SymbolTable, instruction: string) =>
-    R.pipe(R.prop(R.__, symbolTable), decimalToBinaryString)(instruction),
+    R.pipe(
+      R.prop(R.__, symbolTable),
+      decimalToBinaryString,
+      leftPad(16),
+    )(instruction),
 )
 
 export const convertInstruction = R.curry(
