@@ -40,6 +40,32 @@ describe('instruction parser', () => {
     )
   })
 
+  describe('isVariableSymbol', () => {
+    parametrize(
+      [
+        [
+          '@FOO',
+          'it should return true if the symbol is a variable and is not in predefined symbols',
+          true,
+        ],
+        [
+          '@SCREEN',
+          'it should return false if the symbol is in predefined symbols',
+          false,
+        ],
+      ],
+      (symbol: string, description: string, expected: boolean) => {
+        it(description, () => {
+          // given ... we have an instruction
+          // when ... we call our function with this symbol
+          const result = SUT.isVariableSymbol(symbol)
+          // then ... it should return the result as expected.
+          expect(result).toBe(expected)
+        })
+      },
+    )
+  })
+
   describe('isSymbolOrAInstruction', () => {
     parametrize(
       [
@@ -68,7 +94,7 @@ describe('instruction parser', () => {
         it(description, () => {
           // given ... we have an instruction
           // when ... we call our function with this instruction
-          const result = SUT.isSymbolOrAInstruction(instruction)
+          const result = SUT.isVariableOrLabelSymbolOrAInstruction(instruction)
           // then ... it should return the result as expected.
           expect(result).toBe(expected)
         })

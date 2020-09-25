@@ -1,6 +1,8 @@
 import * as SUT from './assembler'
 import parametrize from 'js-parametrize'
 import { SymbolTable } from './utils/types'
+import * as fs from 'fs'
+import * as path from 'path'
 
 describe('assembler', () => {
   describe('assembleCInstruction', () => {
@@ -68,8 +70,44 @@ describe('assembler', () => {
           // given ... we have a valid instruction and a symbol table
           // when ... we call our function
           const result = SUT.convertInstruction(symbols, instruction)
-          // then ... it should reutrn the value as expected
+          // then ... it should return the value as expected
           expect(result).toEqual(expected)
+        })
+      },
+    )
+  })
+
+  describe('assemble', () => {
+    parametrize(
+      [
+        [
+          'should convert a basic hack program to the expected binary',
+          'Fill.asm',
+          'Fill.hack',
+        ],
+      ],
+      (
+        description: string,
+        inputAssemblyFileName: string,
+        expectedHackFileName: string,
+      ) => {
+        it(description, () => {
+          // given ... we have a hack assembly file and we load it
+          const inputFileAsString = fs
+            .readFileSync(
+              path.join(__dirname, '..', 'hack-samples', inputAssemblyFileName),
+            )
+            .toString()
+          const outputFileAsString = fs
+            .readFileSync(
+              path.join(__dirname, '..', 'hack-samples', expectedHackFileName),
+            )
+            .toString()
+
+          // when ... we call our function
+          const result = SUT.assemble(inputFileAsString)
+          // then ... it should return the value as expected
+          expect(result).toEqual(outputFileAsString)
         })
       },
     )

@@ -27,9 +27,13 @@ export const isAInstruction = R.allPass([
   R.pipe(R.drop(1), isAllDigits),
 ])
 
+const inPredefinedSymbolsTable = R.has(R.__, predefinedSymbolsTable)
 export const isVariableSymbol: (value: string) => boolean = R.allPass([
   isVariableSymbolOrAInstruction,
-  R.pipe(R.drop(1), isAllLetters),
+  R.pipe(
+    R.drop(1),
+    R.allPass([isAllLetters, R.pipe(inPredefinedSymbolsTable, R.not)]),
+  ),
 ])
 
 const labelRegex = /^\([A-Z]+\)$/g
@@ -39,7 +43,7 @@ export const isLabelWithNoBrackets: (value: string) => boolean = R.test(
   labeNoBracketsRegex,
 )
 
-export const isSymbolOrAInstruction = R.anyPass([
+export const isVariableOrLabelSymbolOrAInstruction = R.anyPass([
   isAInstruction,
   isVariableSymbol,
   isLabelWithNoBrackets,

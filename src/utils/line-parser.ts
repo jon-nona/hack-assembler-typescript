@@ -5,7 +5,10 @@ export const removeEmpty: (lines: string[]) => string[] = R.reject(R.isEmpty)
 export const removeWhiteSpace: (lines: string[]) => string[] = R.map(
   R.replace(/\s+/g, ''),
 )
-export const linesToArray: (input: string) => string[] = R.split('\n')
+export const linesToArray: (input: string) => string[] = R.pipe(
+  R.split('\n'),
+  R.reject(R.isEmpty),
+)
 export const arrayToLines: (values: string[]) => string = R.join('\n')
 
 export const cleanCommentsAndRemoveBlankLines: (

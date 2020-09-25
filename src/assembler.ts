@@ -10,7 +10,7 @@ import {
   arrayToLines,
 } from './utils/line-parser'
 import {
-  isSymbolOrAInstruction,
+  isVariableOrLabelSymbolOrAInstruction,
   parseCInstruction,
   convertCInstructionToBinary,
   decimalToBinaryString,
@@ -36,7 +36,7 @@ export const convertInstruction = R.curry(
   (symbolTable: SymbolTable, instruction: string) =>
     R.pipe(
       R.ifElse(
-        isSymbolOrAInstruction,
+        isVariableOrLabelSymbolOrAInstruction,
         R.ifElse(
           isAInstruction,
           convertAInstructionToBinary,
@@ -51,6 +51,7 @@ export const assemble: (input: string) => string = R.pipe(
   cleanCommentsAndRemoveBlankLines,
   linesToArray,
   R.juxt([R.identity, buildSymbolsTable]),
+  R.tap(console.log),
   R.zipObj(['instructions', 'symbolTable']),
   (data: { instructions: string[]; symbolTable: SymbolTable }) =>
     data.instructions.map((instruction: string) =>
