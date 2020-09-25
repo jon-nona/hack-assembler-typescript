@@ -6,8 +6,8 @@ import {
 } from './utils/instruction-parser'
 import {
   cleanCommentsAndRemoveBlankLines,
-  toLines,
-  fromLines,
+  linesToArray,
+  arrayToLines,
 } from './utils/line-parser'
 import {
   isSymbolOrAInstruction,
@@ -44,12 +44,12 @@ export const convertInstruction = R.curry(
 
 export const assemble: (input: string) => string = R.pipe(
   cleanCommentsAndRemoveBlankLines,
-  toLines,
+  linesToArray,
   R.juxt([R.identity, buildSymbolsTable]),
   R.zipObj(['instructions', 'symbolTable']),
   (data: { instructions: string[]; symbolTable: SymbolTable }) =>
     data.instructions.map((instruction: string) =>
       convertInstruction(instruction, data.symbolTable),
     ),
-  fromLines,
+  arrayToLines,
 )
