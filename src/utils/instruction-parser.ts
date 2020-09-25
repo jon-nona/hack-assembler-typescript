@@ -1,4 +1,5 @@
 import R from 'ramda'
+import { toLines } from './line-parser'
 import { leftPad } from './string'
 import { compTable, destTable, jumpTable } from './tables'
 import { CInstructionValue } from './types'
@@ -13,19 +14,22 @@ trimmed of spaces.
 */
 const cInstructionRegex = /(?:(?<dest>M|D|MD|A|AM|AD|AMD)=)?(?<comp>0|1|-1|![ADM]|[AMD][+-][AMD]|[AMD]-[AMD]|D[&|]A|A[&|]D|D[&|]M|M[&|]D|[ADM][+-]?1?);?(?<jump>JGT|JEQ|JGE|JLT|JNEJLE|JMP)?$/
 
-const isSymbolOrAInstruction = R.pipe(R.head, R.equals('@'))
+const isVariableSymbolOrAInstruction = R.pipe(R.head, R.equals('@'))
 const isAllDigits = R.pipe(R.match(/\d+/), R.length, R.gt(R.__, 0))
 const isAllLetters = R.pipe(R.match(/[A-Za-z]+/), R.length, R.gt(R.__, 0))
 
 export const isAInstruction = R.allPass([
-  isSymbolOrAInstruction,
+  isVariableSymbolOrAInstruction,
   R.pipe(R.drop(1), isAllDigits),
 ])
 
-export const isSymbol: boolean = R.allPass([
-  isSymbolOrAInstruction,
+export const isVariableSymbol: (value: string) => boolean = R.allPass([
+  isVariableSymbolOrAInstruction,
   R.pipe(R.drop(1), isAllLetters),
 ])
+
+const labelRegex = /^\([A-Z]+\)$/g
+export const isLabelSymbol = (value: string): boolean => labelRegex.test(value)
 
 const decimalToBinaryString = (x: number): string => x.toString(2)
 
@@ -53,4 +57,59 @@ export const convertCInstructionToBinary: (
   R.zipWith(R.call, lookupFunctions),
   R.join(''),
   R.concat('111'),
+)
+
+const reduceIndexed = R.addIndex(R.reduce)
+const parenthesesRegex = /[()]/g
+const stripParentheses = R.replace(parenthesesRegex, '')
+const currentLabelCount = R.pipe(R.keys, R.length)
+const calculateLabelAddress = (
+  currentAddress: number,
+  map: {
+    [key: string]: number
+  },
+) => R.subtract(currentAddress, currentLabelCount(map))
+const addLabelToTable = R.curry(
+  (label: string, currentAddress: number, table: { [key: string]: number }) =>
+    R.pipe(
+      stripParentheses,
+      R.assoc(R.__, calculateLabelAddress(currentAddress, table), table),
+    )(label),
+)
+
+export const buildLabelSymbolTable: (
+  instructions: string[],
+) => {
+  [key: string]: number
+} = reduceIndexed(
+  (table: { [key: string]: number }, line: string, index: number) =>
+    R.ifElse(
+      isLabelSymbol,
+      addLabelToTable(R.__, index, table),
+      R.always(table),
+    )(line),
+  {},
+)
+
+const addVariableToTable = R.curry(
+  (
+    variable: string,
+    table: {
+      [key: string]: number
+    },
+  ) =>
+    R.pipe(R.assoc(R.__, R.add(16, R.length(R.keys(table))), table))(variable),
+)
+export const buildVariableSymbolsTable: (
+  instructions: string[],
+) => {
+  [key: string]: number
+} = R.reduce(
+  (table: { [key: string]: number }, line: string) =>
+    R.ifElse(
+      isVariableSymbol,
+      addVariableToTable(R.__, table),
+      R.always(table),
+    )(line),
+  {},
 )

@@ -8,12 +8,12 @@ describe('instruction parser', () => {
       [
         [
           '@24',
-          'it should return true if the instruction is an a instruction',
+          'it should return true if the instruction is an A instruction',
           true,
         ],
         [
           'M=24',
-          'it should return true if the instruction not an a instruction',
+          'it should return false if the instruction not an A instruction',
           false,
         ],
         [
@@ -116,6 +116,37 @@ describe('instruction parser', () => {
     )
   })
 
+  describe('isLabelSymbol', () => {
+    parametrize(
+      [
+        [
+          'it should return true when the value is a valid label symbol',
+          '(LABEL)',
+          true,
+        ],
+        [
+          'it should return false when the value is not a valid label symbol',
+          '@21',
+          false,
+        ],
+        [
+          'it should return false when the value is not a valid label symbol',
+          '(Label',
+          false,
+        ],
+      ],
+      (description: string, value: string, expected: boolean) => {
+        it(description, () => {
+          // given ... we have a potential label symbol
+          // when ...  we call our function
+          const result = SUT.isLabelSymbol(value)
+          // then ... it should return the result as expected
+          expect(result).toEqual(expected)
+        })
+      },
+    )
+  })
+
   describe('convertCInstructionToBinarWithoutABit', () => {
     parametrize(
       [
@@ -158,5 +189,45 @@ describe('instruction parser', () => {
         })
       },
     )
+  })
+
+  describe('buildLabelSymbolTable', () => {
+    it('should build a label symbols table with a lookup value for each symbol that is encountered', () => {
+      // given ... we have instructions as an array
+      const instructions = [
+        '(SYMBOL)',
+        'M=24',
+        '(LOOP)',
+        '@24',
+        'M=20',
+        '(JON)',
+        '@24',
+      ]
+      // when ... we call our function
+      const result = SUT.buildLabelSymbolTable(instructions)
+      // then ... it should return the result as expected
+      expect(result).toEqual({ SYMBOL: 0, LOOP: 1, JON: 3 })
+    })
+  })
+
+  describe('buildVariableSymbolsTable', () => {
+    it('should build a variable symbols table with a lookup value for each symbol that is encountered', () => {
+      // given ... we have instructions as an array
+      const instructions = [
+        '(SYMBOL)',
+        'M=24',
+        '(LOOP)',
+        '@24',
+        'M=20',
+        '(JON)',
+        '@24',
+        '@foo',
+        '@bar',
+      ]
+      // when ... we call our function
+      const result = SUT.buildVariableSymbolsTable(instructions)
+      // then ... it should return the result as expected
+      expect(result).toEqual({ '@foo': 16, '@bar': 17 })
+    })
   })
 })
