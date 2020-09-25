@@ -1,8 +1,12 @@
 import R from 'ramda'
-import { toLines } from './line-parser'
 import { leftPad } from './string'
-import { compTable, destTable, jumpTable } from './tables'
-import { CInstructionValue } from './types'
+import {
+  compTable,
+  destTable,
+  jumpTable,
+  predefinedSymbolsTable,
+} from './tables'
+import { CInstructionValue, SymbolTable } from './types'
 
 /*
 Regex for parsing a c-instruction and capturing the various instructions out of it. Assumes the instruction has already been
@@ -29,9 +33,15 @@ export const isVariableSymbol: (value: string) => boolean = R.allPass([
 ])
 
 const labelRegex = /^\([A-Z]+\)$/g
-export const isLabelSymbol = (value: string): boolean => labelRegex.test(value)
+export const isLabelSymbol: (value: string) => boolean = R.test(labelRegex)
 
-const decimalToBinaryString = (x: number): string => x.toString(2)
+export const isSymbolOrAInstruction = R.anyPass([
+  isAInstruction,
+  isVariableSymbol,
+  isLabelSymbol,
+])
+
+export const decimalToBinaryString = (x: number): string => x.toString(2)
 
 export const convertAInstructionToBinary: (
   aInstruction: string,
@@ -63,25 +73,18 @@ const reduceIndexed = R.addIndex(R.reduce)
 const parenthesesRegex = /[()]/g
 const stripParentheses = R.replace(parenthesesRegex, '')
 const currentLabelCount = R.pipe(R.keys, R.length)
-const calculateLabelAddress = (
-  currentAddress: number,
-  map: {
-    [key: string]: number
-  },
-) => R.subtract(currentAddress, currentLabelCount(map))
+const calculateLabelAddress = (currentAddress: number, table: SymbolTable) =>
+  R.subtract(currentAddress, currentLabelCount(table))
 const addLabelToTable = R.curry(
-  (label: string, currentAddress: number, table: { [key: string]: number }) =>
+  (label: string, currentAddress: number, table: SymbolTable) =>
     R.pipe(
       stripParentheses,
       R.assoc(R.__, calculateLabelAddress(currentAddress, table), table),
     )(label),
 )
-
 export const buildLabelSymbolTable: (
   instructions: string[],
-) => {
-  [key: string]: number
-} = reduceIndexed(
+) => SymbolTable = reduceIndexed(
   (table: { [key: string]: number }, line: string, index: number) =>
     R.ifElse(
       isLabelSymbol,
@@ -91,20 +94,12 @@ export const buildLabelSymbolTable: (
   {},
 )
 
-const addVariableToTable = R.curry(
-  (
-    variable: string,
-    table: {
-      [key: string]: number
-    },
-  ) =>
-    R.pipe(R.assoc(R.__, R.add(16, R.length(R.keys(table))), table))(variable),
+const addVariableToTable = R.curry((variable: string, table: SymbolTable) =>
+  R.pipe(R.assoc(R.__, R.add(16, R.length(R.keys(table))), table))(variable),
 )
 export const buildVariableSymbolsTable: (
   instructions: string[],
-) => {
-  [key: string]: number
-} = R.reduce(
+) => SymbolTable = R.reduce(
   (table: { [key: string]: number }, line: string) =>
     R.ifElse(
       isVariableSymbol,
@@ -112,4 +107,12 @@ export const buildVariableSymbolsTable: (
       R.always(table),
     )(line),
   {},
+)
+
+export const buildSymbolsTable: (
+  instructions: string[],
+) => SymbolTable = R.pipe(
+  R.juxt([buildLabelSymbolTable, buildVariableSymbolsTable]),
+  R.prepend(predefinedSymbolsTable),
+  R.mergeAll,
 )

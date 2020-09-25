@@ -1,9 +1,10 @@
 import * as SUT from './instruction-parser'
 import parametrize from 'js-parametrize'
 import { CInstructionValue } from './types'
+import { predefinedSymbolsTable } from './tables'
 
 describe('instruction parser', () => {
-  describe('isAintruction', () => {
+  describe('isAinstruction', () => {
     parametrize(
       [
         [
@@ -32,6 +33,42 @@ describe('instruction parser', () => {
           // given ... we have an instruction
           // when ... we call our function with this instruction
           const result = SUT.isAInstruction(instruction)
+          // then ... it should return the result as expected.
+          expect(result).toBe(expected)
+        })
+      },
+    )
+  })
+
+  describe('isSymbolOrAInstruction', () => {
+    parametrize(
+      [
+        [
+          '@24',
+          'it should return true if the instruction is an A instruction',
+          true,
+        ],
+        [
+          'M=24',
+          'it should return false if the instruction not an A instruction, variable symbol or label symbol',
+          false,
+        ],
+        [
+          '@foo',
+          'it should return false if the instruction is a variable symbol',
+          true,
+        ],
+        [
+          '(LOOP)',
+          'it should return true if the instruction is label symbol',
+          true,
+        ],
+      ],
+      (instruction: string, description: string, expected: boolean) => {
+        it(description, () => {
+          // given ... we have an instruction
+          // when ... we call our function with this instruction
+          const result = SUT.isSymbolOrAInstruction(instruction)
           // then ... it should return the result as expected.
           expect(result).toBe(expected)
         })
@@ -228,6 +265,34 @@ describe('instruction parser', () => {
       const result = SUT.buildVariableSymbolsTable(instructions)
       // then ... it should return the result as expected
       expect(result).toEqual({ '@foo': 16, '@bar': 17 })
+    })
+  })
+
+  describe('buildSymbolsTable', () => {
+    it('should build a symbols table with all variables, labels and predefined symbols contained in it', () => {
+      // given ... we have instructions as an array
+      const instructions = [
+        '(SYMBOL)',
+        'M=24',
+        '(LOOP)',
+        '@24',
+        'M=20',
+        '(JON)',
+        '@24',
+        '@foo',
+        '@bar',
+      ]
+      // when ... we call our function
+      const result = SUT.buildSymbolsTable(instructions)
+      // then ... it should return the result as expected
+      expect(result).toEqual({
+        '@foo': 16,
+        '@bar': 17,
+        'SYMBOL': 0,
+        'LOOP': 1,
+        'JON': 3,
+        ...predefinedSymbolsTable,
+      })
     })
   })
 })
