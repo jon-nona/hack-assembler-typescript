@@ -269,12 +269,12 @@ describe('instruction parser', () => {
       // when ... we call our function
       const result = SUT.buildLabelSymbolTable(instructions)
       // then ... it should return the result as expected
-      expect(result).toEqual({ SYMBOL: 0, LOOP: 1, JON: 3 })
+      expect(result).toEqual({ '@SYMBOL': 0, '@LOOP': 1, '@JON': 3 })
     })
   })
 
   describe('buildVariableSymbolsTable', () => {
-    it('should build a variable symbols table with a lookup value for each symbol that is encountered', () => {
+    it('should build a variable symbols table with a lookup value for each symbol that is encountered, excluding symbols that have already been registered as labels', () => {
       // given ... we have instructions as an array
       const instructions = [
         '(SYMBOL)',
@@ -286,9 +286,16 @@ describe('instruction parser', () => {
         '@24',
         '@foo',
         '@bar',
+        '@LOOP',
       ]
+
+      // we have some existing label symbols
+      const labelSymbols = {
+        '@LOOP': 22,
+      }
+
       // when ... we call our function
-      const result = SUT.buildVariableSymbolsTable(instructions)
+      const result = SUT.buildVariableSymbolsTable(labelSymbols, instructions)
       // then ... it should return the result as expected
       expect(result).toEqual({ '@foo': 16, '@bar': 17 })
     })
@@ -306,6 +313,8 @@ describe('instruction parser', () => {
         '(JON)',
         '@24',
         '@foo',
+        '@SYMBOL',
+        '@LOOP',
         '@bar',
       ]
       // when ... we call our function
@@ -314,9 +323,9 @@ describe('instruction parser', () => {
       expect(result).toEqual({
         '@foo': 16,
         '@bar': 17,
-        'SYMBOL': 0,
-        'LOOP': 1,
-        'JON': 3,
+        '@SYMBOL': 0,
+        '@LOOP': 1,
+        '@JON': 3,
         ...predefinedSymbolsTable,
       })
     })

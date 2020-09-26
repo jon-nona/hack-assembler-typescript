@@ -87,6 +87,7 @@ const addLabelToTable = R.curry(
   (label: string, currentAddress: number, table: SymbolTable) =>
     R.pipe(
       stripParentheses,
+      R.concat('@'),
       R.assoc(R.__, calculateLabelAddress(currentAddress, table), table),
     )(label),
 )
@@ -105,22 +106,31 @@ export const buildLabelSymbolTable: (
 const addVariableToTable = R.curry((variable: string, table: SymbolTable) =>
   R.pipe(R.assoc(R.__, R.add(16, R.length(R.keys(table))), table))(variable),
 )
-export const buildVariableSymbolsTable: (
-  instructions: string[],
-) => SymbolTable = R.reduce(
-  (table: { [key: string]: number }, line: string) =>
-    R.ifElse(
-      isVariableSymbol,
-      addVariableToTable(R.__, table),
-      R.always(table),
-    )(line),
-  {},
+
+const doesNotHaveProperty = R.complement(R.has)
+export const buildVariableSymbolsTable = R.curry(
+  (labelSymbols: SymbolTable, instructions: string[]): SymbolTable =>
+    R.reduce(
+      (table: { [key: string]: number }, line: string) =>
+        R.ifElse(
+          R.pipe(
+            R.allPass([
+              isVariableSymbol,
+              doesNotHaveProperty(R.__, labelSymbols),
+            ]),
+          ),
+          addVariableToTable(R.__, table),
+          R.always(table),
+        )(line),
+      {},
+    )(instructions),
 )
 
 export const buildSymbolsTable: (
   instructions: string[],
 ) => SymbolTable = R.pipe(
-  R.juxt([buildLabelSymbolTable, buildVariableSymbolsTable]),
+  R.juxt([buildLabelSymbolTable, R.identity]),
+  R.juxt([R.head, R.apply(buildVariableSymbolsTable)]),
   R.prepend(predefinedSymbolsTable),
   R.mergeAll,
 )
