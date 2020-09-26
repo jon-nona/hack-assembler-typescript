@@ -18,26 +18,25 @@ trimmed of spaces.
 */
 const cInstructionRegex = /(?:(?<dest>M|D|MD|A|AM|AD|AMD)=)?(?<comp>0|1|-1|![ADM]|[AMD][+-][AMD]|[AMD]-[AMD]|D[&|]A|A[&|]D|D[&|]M|M[&|]D|[ADM][+-]?1?);?(?<jump>JGT|JEQ|JGE|JLT|JNEJLE|JMP)?$/
 
-const isVariableSymbolOrAInstruction = R.pipe(R.head, R.equals('@'))
-const isAllDigits = R.pipe(R.match(/\d+/), R.length, R.gt(R.__, 0))
-const isAllLetters = R.pipe(R.match(/[A-Za-z]+/), R.length, R.gt(R.__, 0))
+const isSymbolOrAInstruction = R.pipe(R.head, R.equals('@'))
+const isAllDigits = R.pipe(R.match(/^\d+$/), R.length, R.gt(R.__, 0))
+const isAllLetters = R.pipe(R.match(/^[A-Za-z]+$/), R.length, R.gt(R.__, 0))
 
 export const isAInstruction = R.allPass([
-  isVariableSymbolOrAInstruction,
+  isSymbolOrAInstruction,
   R.pipe(R.drop(1), isAllDigits),
 ])
 
-const inPredefinedSymbolsTable = R.has(R.__, predefinedSymbolsTable)
+const notInPredefinedSymbolsTable = R.complement(
+  R.has(R.__, predefinedSymbolsTable),
+)
 export const isVariableSymbol: (value: string) => boolean = R.allPass([
-  isVariableSymbolOrAInstruction,
-  R.pipe(
-    R.drop(1),
-    R.allPass([isAllLetters, R.pipe(inPredefinedSymbolsTable, R.not)]),
-  ),
+  isSymbolOrAInstruction,
+  R.allPass([R.pipe(R.drop(1), isAllLetters), notInPredefinedSymbolsTable]),
 ])
 
-const labelRegex = /^\([A-Z]+\)$/g
-const labeNoBracketsRegex = /^[A-Z]+$/g
+export const labelRegex = /^\([A-Z]+\)$/g
+export const labeNoBracketsRegex = /^[A-Z]+$/g
 export const isLabelSymbol: (value: string) => boolean = R.test(labelRegex)
 export const isLabelWithNoBrackets: (value: string) => boolean = R.test(
   labeNoBracketsRegex,
@@ -109,16 +108,15 @@ const addVariableToTable = R.curry((variable: string, table: SymbolTable) =>
 
 const doesNotHaveProperty = R.complement(R.has)
 export const buildVariableSymbolsTable = R.curry(
-  (labelSymbols: SymbolTable, instructions: string[]): SymbolTable =>
+  (existingSymbols: SymbolTable, instructions: string[]): SymbolTable =>
     R.reduce(
       (table: { [key: string]: number }, line: string) =>
         R.ifElse(
-          R.pipe(
-            R.allPass([
-              isVariableSymbol,
-              doesNotHaveProperty(R.__, labelSymbols),
-            ]),
-          ),
+          R.allPass([
+            isVariableSymbol,
+            doesNotHaveProperty(R.__, existingSymbols),
+            doesNotHaveProperty(R.__, table),
+          ]),
           addVariableToTable(R.__, table),
           R.always(table),
         )(line),
@@ -126,11 +124,15 @@ export const buildVariableSymbolsTable = R.curry(
     )(instructions),
 )
 
+const buildLabelSymbolsTableAndMergePredefinedSymbols = R.pipe(
+  buildLabelSymbolTable,
+  R.mergeRight(predefinedSymbolsTable),
+)
+
 export const buildSymbolsTable: (
   instructions: string[],
 ) => SymbolTable = R.pipe(
-  R.juxt([buildLabelSymbolTable, R.identity]),
+  R.juxt([buildLabelSymbolsTableAndMergePredefinedSymbols, R.identity]),
   R.juxt([R.head, R.apply(buildVariableSymbolsTable)]),
-  R.prepend(predefinedSymbolsTable),
   R.mergeAll,
 )

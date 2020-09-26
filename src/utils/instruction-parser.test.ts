@@ -8,6 +8,11 @@ describe('instruction parser', () => {
     parametrize(
       [
         [
+          '@R0',
+          'it should return false if the instruction is not an A instruction',
+          false,
+        ],
+        [
           '@24',
           'it should return true if the instruction is an A instruction',
           true,
@@ -287,6 +292,7 @@ describe('instruction parser', () => {
         '@foo',
         '@bar',
         '@LOOP',
+        '@foo',
       ]
 
       // we have some existing label symbols
@@ -316,6 +322,9 @@ describe('instruction parser', () => {
         '@SYMBOL',
         '@LOOP',
         '@bar',
+        '@KBD',
+        '@SCREEN',
+        '@foo',
       ]
       // when ... we call our function
       const result = SUT.buildSymbolsTable(instructions)

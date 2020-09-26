@@ -1,8 +1,9 @@
-import * as SUT from './assembler'
-import parametrize from 'js-parametrize'
-import { SymbolTable } from './utils/types'
 import * as fs from 'fs'
+import parametrize from 'js-parametrize'
 import * as path from 'path'
+import R from 'ramda'
+import * as SUT from './assembler'
+import { SymbolTable } from './utils/types'
 
 describe('assembler', () => {
   describe('assembleCInstruction', () => {
