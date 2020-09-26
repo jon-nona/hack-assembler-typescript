@@ -82,9 +82,39 @@ describe('assembler', () => {
     parametrize(
       [
         [
-          'should convert a basic hack program to the expected binary',
+          'should convert the Fill assembly program to the expected binary',
           'Fill.asm',
           'Fill.hack',
+        ],
+        [
+          'should convert the Add assembly hack program to the expected binary',
+          'Add.asm',
+          'Add.hack',
+        ],
+        [
+          'should convert the Max assembly hack program to the expected binary',
+          'Max.asm',
+          'Max.hack',
+        ],
+        [
+          'should convert the MaxL assembly hack program to the expected binary',
+          'MaxL.asm',
+          'MaxL.hack',
+        ],
+        [
+          'should convert the Pong assembly hack program to the expected binary',
+          'Pong.asm',
+          'Pong.hack',
+        ],
+        [
+          'should convert the Rect assembly hack program to the expected binary',
+          'Rect.asm',
+          'Rect.hack',
+        ],
+        [
+          'should convert the RectL assembly hack program to the expected binary',
+          'RectL.asm',
+          'RectL.hack',
         ],
       ],
       (

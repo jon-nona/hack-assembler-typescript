@@ -18,9 +18,10 @@ trimmed of spaces.
 */
 const cInstructionRegex = /(?:(?<dest>M|D|MD|A|AM|AD|AMD)=)?(?<comp>0|1|-1|![ADM]|[AMD][+-][AMD]|[AMD]-[AMD]|D[&|]A|A[&|]D|D[&|]M|M[&|]D|[ADM][+-]?1?);?(?<jump>JGT|JEQ|JGE|JLT|JNEJLE|JMP)?$/
 
+const variableNameRegex = /^[A-Za-z_.$0-9]+$/g
 const isSymbolOrAInstruction = R.pipe(R.head, R.equals('@'))
 const isAllDigits = R.pipe(R.match(/^\d+$/), R.length, R.gt(R.__, 0))
-const isAllLetters = R.pipe(R.match(/^[A-Za-z]+$/), R.length, R.gt(R.__, 0))
+const isValidVariableName = R.test(variableNameRegex)
 
 export const isAInstruction = R.allPass([
   isSymbolOrAInstruction,
@@ -32,11 +33,14 @@ const notInPredefinedSymbolsTable = R.complement(
 )
 export const isVariableSymbol: (value: string) => boolean = R.allPass([
   isSymbolOrAInstruction,
-  R.allPass([R.pipe(R.drop(1), isAllLetters), notInPredefinedSymbolsTable]),
+  R.allPass([
+    R.pipe(R.drop(1), isValidVariableName),
+    notInPredefinedSymbolsTable,
+  ]),
 ])
 
-export const labelRegex = /^\([A-Z]+\)$/g
-export const labeNoBracketsRegex = /^[A-Z]+$/g
+export const labelRegex = /^\([A-Za-z_.$0-9]+\)$/g
+export const labeNoBracketsRegex = /^[A-Za-z_.$0-9]+$/g
 export const isLabelSymbol: (value: string) => boolean = R.test(labelRegex)
 export const isLabelWithNoBrackets: (value: string) => boolean = R.test(
   labeNoBracketsRegex,
