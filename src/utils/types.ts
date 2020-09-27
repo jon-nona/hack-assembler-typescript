@@ -8,3 +8,7 @@ export interface CInstructionValue {
   comp?: string
   jump?: string
 }
+
+export interface SymbolTable {
+  [key: string]: number
+}

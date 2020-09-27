@@ -23,23 +23,23 @@ describe('line parser', () => {
     })
   })
 
-  describe('fromLines', () => {
+  describe('arrayToLines', () => {
     it('should join an array into a string with a new line for each item', () => {
       // given ... we have an array with some values
       const testArray: any = ['something', 'some other stuff']
       // when ... we call our method
-      const result = SUT.fromLines(testArray)
+      const result = SUT.arrayToLines(testArray)
       // then ... the result should be returned as expected
       expect(result).toEqual('something\nsome other stuff')
     })
   })
 
-  describe('toLines', () => {
+  describe('linesToArray', () => {
     it('should split a string into an array based on new lines', () => {
       // given ... we have a string with some new lines
       const testString = 'a string with\nnew lines'
       // when ... we call our method
-      const result = SUT.toLines(testString)
+      const result = SUT.linesToArray(testString)
       // then ... the result should be returned as expected
       expect(result).toEqual(['a string with', 'new lines'])
     })

@@ -1,10 +1,10 @@
 import chalk from 'chalk'
 import * as fs from 'fs'
 import { bindNodeCallback, Observable, of } from 'rxjs'
-import { flatMap, map, tap } from 'rxjs/operators'
+import { mergeMap, map, tap } from 'rxjs/operators'
 import yargs from 'yargs'
 import { parseInputArguments } from './utils/arguments'
-import { cleanCommentsAndRemoveBlankLines } from './utils/line-parser'
+import { assemble } from './assembler'
 
 export const readFile$ = bindNodeCallback(fs.readFile)
 export const writeFile$ = bindNodeCallback(fs.writeFile)
@@ -39,7 +39,7 @@ of(argumentsAsArray)
         infoMessage(`Checking file exists ... ${parsedArguments.inputFile}`),
       ),
     ),
-    flatMap(
+    mergeMap(
       (parsedArguments): Observable<string> =>
         accessFile$(parsedArguments.inputFile).pipe(
           tap(() => {
@@ -48,17 +48,17 @@ of(argumentsAsArray)
               infoMessage(`Reading file from ${parsedArguments.inputFile}`),
             )
           }),
-          flatMap(() => readFile$(parsedArguments.inputFile)),
+          mergeMap(() => readFile$(parsedArguments.inputFile)),
           tap(() =>
             console.log(
               infoMessage(`Writing file to ${parsedArguments.outputFile}`),
             ),
           ),
-          flatMap(
+          mergeMap(
             (buffer: Buffer): Observable<string> =>
-              of(cleanCommentsAndRemoveBlankLines(buffer.toString())),
+              of(assemble(buffer.toString())),
           ),
-          flatMap((output: string) =>
+          mergeMap((output: string) =>
             writeFile$(parsedArguments.outputFile, output).pipe(
               map(
                 () =>

@@ -1,19 +1,25 @@
 import * as SUT from './instruction-parser'
 import parametrize from 'js-parametrize'
 import { CInstructionValue } from './types'
+import { predefinedSymbolsTable } from './tables'
 
 describe('instruction parser', () => {
-  describe('isAintruction', () => {
+  describe('isAinstruction', () => {
     parametrize(
       [
         [
+          '@R0',
+          'it should return false if the instruction is not an A instruction',
+          false,
+        ],
+        [
           '@24',
-          'it should return true if the instruction is an a instruction',
+          'it should return true if the instruction is an A instruction',
           true,
         ],
         [
           'M=24',
-          'it should return true if the instruction not an a instruction',
+          'it should return false if the instruction not an A instruction',
           false,
         ],
         [
@@ -32,6 +38,73 @@ describe('instruction parser', () => {
           // given ... we have an instruction
           // when ... we call our function with this instruction
           const result = SUT.isAInstruction(instruction)
+          // then ... it should return the result as expected.
+          expect(result).toBe(expected)
+        })
+      },
+    )
+  })
+
+  describe('isVariableSymbol', () => {
+    parametrize(
+      [
+        [
+          '@FOO',
+          'it should return true if the symbol is a variable and is not in predefined symbols',
+          true,
+        ],
+        [
+          '@SCREEN',
+          'it should return false if the symbol is in predefined symbols',
+          false,
+        ],
+      ],
+      (symbol: string, description: string, expected: boolean) => {
+        it(description, () => {
+          // given ... we have an instruction
+          // when ... we call our function with this symbol
+          const result = SUT.isVariableOrLabelSymbol(symbol)
+          // then ... it should return the result as expected.
+          expect(result).toBe(expected)
+        })
+      },
+    )
+  })
+
+  describe('isVariableOrLabelSymbolOrAInstruction', () => {
+    parametrize(
+      [
+        [
+          '@24',
+          'it should return true if the instruction is an A instruction',
+          true,
+        ],
+        [
+          'M=24',
+          'it should return false if the instruction not an A instruction, variable symbol or label symbol',
+          false,
+        ],
+        [
+          '@foo',
+          'it should return false if the instruction is a variable symbol',
+          true,
+        ],
+        [
+          '@LOOP',
+          'it should return true if the instruction is a reference to a label symbol',
+          true,
+        ],
+        [
+          '@ball.setdestination$if_true0',
+          'it should return true if the reference to the variable has periods and $ characters in it',
+          true,
+        ],
+      ],
+      (instruction: string, description: string, expected: boolean) => {
+        it(description, () => {
+          // given ... we have an instruction
+          // when ... we call our function with this instruction
+          const result = SUT.isVariableOrLabelSymbolOrAInstruction(instruction)
           // then ... it should return the result as expected.
           expect(result).toBe(expected)
         })
@@ -103,6 +176,13 @@ describe('instruction parser', () => {
             jump: 'JMP',
           },
         ],
+        [
+          'D;JNE',
+          {
+            comp: 'D',
+            jump: 'JNE',
+          },
+        ],
       ],
       (instruction: string, expected: CInstructionValue) => {
         it('should parse a c instruction', () => {
@@ -116,7 +196,38 @@ describe('instruction parser', () => {
     )
   })
 
-  describe('convertCInstructionToBinarWithoutABit', () => {
+  describe('isLabelSymbol', () => {
+    parametrize(
+      [
+        [
+          'it should return true when the value is a valid label symbol',
+          '(LABEL)',
+          true,
+        ],
+        [
+          'it should return false when the value is not a valid label symbol',
+          '@21',
+          false,
+        ],
+        [
+          'it should return false when the value is not a valid label symbol',
+          '(Label',
+          false,
+        ],
+      ],
+      (description: string, value: string, expected: boolean) => {
+        it(description, () => {
+          // given ... we have a potential label symbol
+          // when ...  we call our function
+          const result = SUT.isLabelSymbol(value)
+          // then ... it should return the result as expected
+          expect(result).toEqual(expected)
+        })
+      },
+    )
+  })
+
+  describe('convertCInstructionToBinary', () => {
     parametrize(
       [
         [
@@ -158,5 +269,86 @@ describe('instruction parser', () => {
         })
       },
     )
+  })
+
+  describe('buildLabelSymbolTable', () => {
+    it('should build a label symbols table with a lookup value for each symbol that is encountered', () => {
+      // given ... we have instructions as an array
+      const instructions = [
+        '(SYMBOL)',
+        'M=24',
+        '(LOOP)',
+        '@24',
+        'M=20',
+        '(JON)',
+        '@24',
+      ]
+      // when ... we call our function
+      const result = SUT.buildLabelSymbolTable(instructions)
+      // then ... it should return the result as expected
+      expect(result).toEqual({ '@SYMBOL': 0, '@LOOP': 1, '@JON': 3 })
+    })
+  })
+
+  describe('buildVariableSymbolsTable', () => {
+    it('should build a variable symbols table with a lookup value for each symbol that is encountered, excluding symbols that have already been registered as labels', () => {
+      // given ... we have instructions as an array
+      const instructions = [
+        '(SYMBOL)',
+        'M=24',
+        '(LOOP)',
+        '@24',
+        'M=20',
+        '(JON)',
+        '@24',
+        '@foo',
+        '@bar',
+        '@LOOP',
+        '@foo',
+      ]
+
+      // we have some existing label symbols
+      const labelSymbols = {
+        '@LOOP': 22,
+      }
+
+      // when ... we call our function
+      const result = SUT.buildVariableSymbolsTable(labelSymbols, instructions)
+      // then ... it should return the result as expected
+      expect(result).toEqual({ '@foo': 16, '@bar': 17 })
+    })
+  })
+
+  describe('buildSymbolsTable', () => {
+    it('should build a symbols table with all variables, labels and predefined symbols contained in it', () => {
+      // given ... we have instructions as an array
+      const instructions = [
+        '(SYMBOL)',
+        'M=24',
+        '(LOOP)',
+        '@24',
+        'M=20',
+        '(JON)',
+        '@24',
+        '@foo',
+        '@SYMBOL',
+        '@LOOP',
+        '@bar',
+        '@KBD',
+        '@SCREEN',
+        '@foo',
+      ]
+      // when ... we call our function
+      const result = SUT.buildSymbolsTable(instructions)
+      // then ... it should return the result as expected
+      expect(result).toEqual({
+        '@foo': 16,
+        '@bar': 17,
+        '@SYMBOL': 0,
+        '@LOOP': 1,
+        '@JON': 3,
+        ...predefinedSymbolsTable,
+      })
+    })
   })
 })
