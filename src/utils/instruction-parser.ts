@@ -16,9 +16,9 @@ trimmed of spaces.
 - comp - named comp capturing group. matches on all the possible values of comp and captures them
 - jump - named jump capturing group. matches on all the possible values of jump and captures them
 */
-const cInstructionRegex = /(?:(?<dest>M|D|MD|A|AM|AD|AMD)=)?(?<comp>0|1|-1|![ADM]|[AMD][+-][AMD]|[AMD]-[AMD]|D[&|]A|A[&|]D|D[&|]M|M[&|]D|[ADM][+-]?1?);?(?<jump>JGT|JEQ|JGE|JLT|JNEJLE|JMP)?$/
+const cInstructionRegex = /(?:(?<dest>M|D|MD|A|AM|AD|AMD)=)?(?<comp>0|1|-1|[AD]|![ADM]|[AMD][+-][AMD]|[AMD]-[AMD]|D[&|]A|A[&|]D|D[&|]M|M[&|]D|[ADM][+-]?1?);?(?<jump>JGT|JEQ|JGE|JLT|JNE|JLE|JMP)?$/
 
-const variableNameRegex = /^[A-Za-z_.$0-9]+$/g
+const variableNameRegex = /^@[A-Za-z_.$0-9]+$/g
 const isSymbolOrAInstruction = R.pipe(R.head, R.equals('@'))
 const isAllDigits = R.pipe(R.match(/^\d+$/), R.length, R.gt(R.__, 0))
 const isValidVariableName = R.test(variableNameRegex)
@@ -31,25 +31,22 @@ export const isAInstruction = R.allPass([
 const notInPredefinedSymbolsTable = R.complement(
   R.has(R.__, predefinedSymbolsTable),
 )
-export const isVariableSymbol: (value: string) => boolean = R.allPass([
+
+export const isVariableOrLabelSymbol: (value: string) => boolean = R.allPass([
   isSymbolOrAInstruction,
   R.allPass([
-    R.pipe(R.drop(1), isValidVariableName),
+    R.complement(isAInstruction),
+    isValidVariableName,
     notInPredefinedSymbolsTable,
   ]),
 ])
 
 export const labelRegex = /^\([A-Za-z_.$0-9]+\)$/g
-export const labeNoBracketsRegex = /^[A-Za-z_.$0-9]+$/g
 export const isLabelSymbol: (value: string) => boolean = R.test(labelRegex)
-export const isLabelWithNoBrackets: (value: string) => boolean = R.test(
-  labeNoBracketsRegex,
-)
 
 export const isVariableOrLabelSymbolOrAInstruction = R.anyPass([
   isAInstruction,
-  isVariableSymbol,
-  isLabelWithNoBrackets,
+  isVariableOrLabelSymbol,
 ])
 
 export const decimalToBinaryString = (x: number): string => x.toString(2)
@@ -112,13 +109,13 @@ const addVariableToTable = R.curry((variable: string, table: SymbolTable) =>
 
 const doesNotHaveProperty = R.complement(R.has)
 export const buildVariableSymbolsTable = R.curry(
-  (existingSymbols: SymbolTable, instructions: string[]): SymbolTable =>
+  (labelSymbols: SymbolTable, instructions: string[]): SymbolTable =>
     R.reduce(
       (table: { [key: string]: number }, line: string) =>
         R.ifElse(
           R.allPass([
-            isVariableSymbol,
-            doesNotHaveProperty(R.__, existingSymbols),
+            isVariableOrLabelSymbol,
+            doesNotHaveProperty(R.__, labelSymbols),
             doesNotHaveProperty(R.__, table),
           ]),
           addVariableToTable(R.__, table),

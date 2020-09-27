@@ -1,7 +1,6 @@
 import * as fs from 'fs'
 import parametrize from 'js-parametrize'
 import * as path from 'path'
-import R from 'ramda'
 import * as SUT from './assembler'
 import { SymbolTable } from './utils/types'
 
@@ -84,37 +83,42 @@ describe('assembler', () => {
         [
           'should convert the Fill assembly program to the expected binary',
           'Fill.asm',
-          'Fill.hack',
+          'Fill.expected.hack',
         ],
         [
           'should convert the Add assembly hack program to the expected binary',
           'Add.asm',
-          'Add.hack',
+          'Add.expected.hack',
         ],
         [
           'should convert the Max assembly hack program to the expected binary',
           'Max.asm',
-          'Max.hack',
+          'Max.expected.hack',
         ],
         [
           'should convert the MaxL assembly hack program to the expected binary',
           'MaxL.asm',
-          'MaxL.hack',
+          'MaxL.expected.hack',
         ],
         [
           'should convert the Pong assembly hack program to the expected binary',
           'Pong.asm',
-          'Pong.hack',
+          'Pong.expected.hack',
+        ],
+        [
+          'should convert the PongL assembly hack program to the expected binary',
+          'PongL.asm',
+          'PongL.expected.hack',
         ],
         [
           'should convert the Rect assembly hack program to the expected binary',
           'Rect.asm',
-          'Rect.hack',
+          'Rect.expected.hack',
         ],
         [
           'should convert the RectL assembly hack program to the expected binary',
           'RectL.asm',
-          'RectL.hack',
+          'RectL.expected.hack',
         ],
       ],
       (
@@ -122,13 +126,12 @@ describe('assembler', () => {
         inputAssemblyFileName: string,
         expectedHackFileName: string,
       ) => {
-        it(description, () => {
+        it(description, async () => {
           // given ... we have a hack assembly file and we load it
-          const inputFileAsString = fs
-            .readFileSync(
-              path.join(__dirname, '..', 'hack-samples', inputAssemblyFileName),
-            )
-            .toString()
+          const inputFile = await fs.promises.readFile(
+            path.join(__dirname, '..', 'hack-samples', inputAssemblyFileName),
+          )
+          const inputFileAsString = inputFile.toString()
           const outputFileAsString = fs
             .readFileSync(
               path.join(__dirname, '..', 'hack-samples', expectedHackFileName),

@@ -63,7 +63,7 @@ describe('instruction parser', () => {
         it(description, () => {
           // given ... we have an instruction
           // when ... we call our function with this symbol
-          const result = SUT.isVariableSymbol(symbol)
+          const result = SUT.isVariableOrLabelSymbol(symbol)
           // then ... it should return the result as expected.
           expect(result).toBe(expected)
         })
@@ -71,7 +71,7 @@ describe('instruction parser', () => {
     )
   })
 
-  describe('isSymbolOrAInstruction', () => {
+  describe('isVariableOrLabelSymbolOrAInstruction', () => {
     parametrize(
       [
         [
@@ -90,8 +90,13 @@ describe('instruction parser', () => {
           true,
         ],
         [
-          'LOOP',
-          'it should return true if the instruction is a label symbol',
+          '@LOOP',
+          'it should return true if the instruction is a reference to a label symbol',
+          true,
+        ],
+        [
+          '@ball.setdestination$if_true0',
+          'it should return true if the reference to the variable has periods and $ characters in it',
           true,
         ],
       ],
@@ -169,6 +174,13 @@ describe('instruction parser', () => {
           {
             comp: '0',
             jump: 'JMP',
+          },
+        ],
+        [
+          'D;JNE',
+          {
+            comp: 'D',
+            jump: 'JNE',
           },
         ],
       ],

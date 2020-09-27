@@ -47,6 +47,7 @@ export const convertInstruction = R.curry(
 
 const notLabel = R.complement(R.test(labelRegex))
 const stripLabels = R.filter(notLabel)
+const addNewLine = R.concat(R.__, '\n')
 export const assemble: (input: string) => string = R.pipe(
   cleanCommentsAndRemoveBlankLines,
   linesToArray,
@@ -57,5 +58,5 @@ export const assemble: (input: string) => string = R.pipe(
       convertInstruction(data.symbolTable, instruction),
     ),
   arrayToLines,
-  R.concat(R.__, '\n'), // add a new line at the end of the file
+  addNewLine,
 )
