@@ -5,6 +5,9 @@
 # Coverage
 coverage
 
+# Binaries
+/bin
+
 # node.js
 #
 node_modules/

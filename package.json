@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "An assembler for the hack language written in typescript",
   "main": "index.js",
+  "bin": "index.js",
   "scripts": {
     "assemble": "babel-node lib/index.js",
     "audit:critical": "audit-ci --critical",
@@ -11,6 +12,7 @@
     "build:clean": "npm run _build:clean:spec",
     "build:types": "npm run _build:types:spec",
     "build:js": "npm run _build:js:spec",
+    "build:binaries": "npm run build && npx pkg --out-path bin lib/package.json",
     "help": "package-json-help.js",
     "lint": "npm run _lint:spec",
     "lint:fix": "npm run _lint:fix:spec",
