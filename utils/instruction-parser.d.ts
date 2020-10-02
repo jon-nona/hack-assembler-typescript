@@ -1,0 +1,13 @@
+import { CInstructionValue, SymbolTable } from './types';
+export declare const isAInstruction: any;
+export declare const isVariableOrLabelSymbol: (value: string) => boolean;
+export declare const labelRegex: RegExp;
+export declare const isLabelSymbol: (value: string) => boolean;
+export declare const isVariableOrLabelSymbolOrAInstruction: any;
+export declare const decimalToBinaryString: (x: number) => string;
+export declare const convertAInstructionToBinary: (aInstruction: string) => string;
+export declare const parseCInstruction: (value: string) => CInstructionValue;
+export declare const convertCInstructionToBinary: (value: CInstructionValue) => string;
+export declare const buildLabelSymbolTable: (instructions: string[]) => SymbolTable;
+export declare const buildVariableSymbolsTable: any;
+export declare const buildSymbolsTable: (instructions: string[]) => SymbolTable;
