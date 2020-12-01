@@ -52,7 +52,7 @@
     "@types/jest": "^26.0.14",
     "@types/yargs": "^15.0.7",
     "@typescript-eslint/eslint-plugin": "^4.3.0",
-    "@typescript-eslint/parser": "^4.3.0",
+    "@typescript-eslint/parser": "^4.9.0",
     "audit-ci": "^3.0.0",
     "babel-jest": "^26.3.0",
     "commitlint": "^11.0.0",
