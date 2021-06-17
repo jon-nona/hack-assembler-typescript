@@ -17,10 +17,10 @@ const infoMessage = chalk.white
 const args = yargs.options({
   input: { type: 'string', demandOption: true, alias: 'i' },
   output: { type: 'string', demandOption: false, alias: 'o' },
-}).argv
+}).argv as { input: string; output: string | undefined }
 
 let argumentsAsArray = [args.input]
-if (args.output) {
+if (args?.output) {
   argumentsAsArray = [...argumentsAsArray, args.output]
 }
 
