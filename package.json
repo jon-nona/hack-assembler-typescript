@@ -67,7 +67,7 @@
     "js-parametrize": "^0.0.3",
     "npm-run-all": "^4.1.5",
     "package-json-help": "^0.0.11",
-    "prettier": "^2.1.2",
+    "prettier": "^2.5.1",
     "publish-to-git": "^1.1.9",
     "rimraf": "^3.0.2",
     "rxjs-marbles": "^7.0.0",
